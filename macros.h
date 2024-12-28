@@ -20,7 +20,7 @@
 #define HNSW_EF_CONSTRUCTION 140 // The number of neighbors considered to find the nearest neighbor at each layer during graph creation
 
 // Other
-#define K_INIT 3000 // > K in the data parameters; the K nearest neighbors fetched in ANN (i.e. in case the threshold is exceeded)
+#define K_INIT 2000 // > K in the data parameters; the K nearest neighbors fetched in ANN (i.e. in case the threshold is exceeded)
 
 
 #endif 

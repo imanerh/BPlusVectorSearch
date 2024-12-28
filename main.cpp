@@ -30,18 +30,18 @@ void processQuery(const vector<float>& q, BPTree* bPTree, hnswlib::HierarchicalN
     vector<uint32_t> knn = computeKNN(hnsw, filtered_ids, nodes, q, K, l, r, threshold);
 
     // Compute recall using brute force KNN
-    vector<uint32_t> ground_truth = bruteForceKNN(filtered_ids, nodes, q, K);
-    int relevant_retrieved = 0;
-    for (int id : knn) {
-        if (find(ground_truth.begin(), ground_truth.end(), id) != ground_truth.end()) {
-            relevant_retrieved++;
-        }
-    }
-    float recall_query = (float)relevant_retrieved / ground_truth.size();
+    // vector<uint32_t> ground_truth = bruteForceKNN(filtered_ids, nodes, q, K);
+    // int relevant_retrieved = 0;
+    // for (int id : knn) {
+    //     if (find(ground_truth.begin(), ground_truth.end(), id) != ground_truth.end()) {
+    //         relevant_retrieved++;
+    //     }
+    // }
+    // float recall_query = (float)relevant_retrieved / ground_truth.size();
 
     // Lock to safely modify shared variables in a multithreaded context
     std::lock_guard<std::mutex> lock(mtx);
-    totalRecall += recall_query;
+    // totalRecall += recall_query;
     knn_results.push_back(std::move(knn));
     nbQueries++;
 }
@@ -148,13 +148,13 @@ int main(int argc, char* argv[]) {
         auto start_time_queries = chrono::high_resolution_clock::now();
 
         int nbQueries = 0;
-        int threshold = 4000;
+        int threshold = 500;
         vector<vector<uint32_t>> knn_results;
         float totalRecall = 0.0f;
 
         vector<thread> threads;
         for (const auto& q : queries) {
-            if (q[QUERY_TYPE_INDEX] == 2) {
+            if (q[QUERY_TYPE_INDEX] == 2 || q[QUERY_TYPE_INDEX] == 3) {
                 threads.emplace_back(processQuery, q, bPTree, hnsw, nodes, threshold, ref(knn_results), ref(totalRecall), ref(nbQueries));
             }
         }
@@ -166,14 +166,13 @@ int main(int argc, char* argv[]) {
         auto end_time_queries = chrono::high_resolution_clock::now();
         auto duration_queries = chrono::duration_cast<chrono::milliseconds>(end_time_queries - start_time_queries).count();
 
-        // Calculate average recall
-        float avgRecall = totalRecall / nbQueries;
 
         cout << "\n> Stats:\n";
         // Print aligned output
         cout << left;  // Left-align all columns
         cout << setw(30) << "   Total Queries Duration:" << setw(10) << duration_queries << " ms" << endl;
-        cout << setw(30) << "   Average Recall:" << setw(10) << avgRecall << endl;
+        // float avgRecall = totalRecall / nbQueries;
+        // cout << setw(30) << "   Average Recall:" << setw(10) << avgRecall << endl;
         cout << setw(30) << "   QPS:" << setw(10) << (nbQueries * 1000 / duration_queries) << endl;
 
 

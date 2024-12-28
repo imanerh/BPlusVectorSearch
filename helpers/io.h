@@ -25,6 +25,9 @@ void SaveKNN(const std::vector<std::vector<uint32_t>> &knns,
   std::ofstream ofs(path, std::ios::out | std::ios::binary);
   const int k = K;
   const uint32_t N = knns.size();
+  if (knns.front().size() != k) {
+    cout << knns.front().size() << endl;
+  }
   assert(knns.front().size() == k);
   for (unsigned i = 0; i < N; ++i) {
     auto const &knn = knns[i];
