@@ -121,12 +121,13 @@ flowchart TD
     B --> E[Create HNSW Index using Multithreading]
     D --> F[Process Queries]
     E --> F[Process Queries]
-    F --> G{Query Size}
-    G -->|<= threshold| H[Run Brute-Force Search with Euclidean Distance Squared]
-    G -->|\> threshold| I[Run HNSW for KNN with Post-Filtering]
-    H --> J[Output Results in Binary File]
-    I --> J[Output Results in Binary File]
-    J --> K[End]
+    F --> G[Run Range Search in B+ Tree]
+    G --> I{Size of Filtered Vectors}
+    I -->|<= threshold| J[Run Brute-Force Search with Euclidean Distance Squared]
+    I -->|\> threshold| K[Run HNSW for KNN with Post-Filtering]
+    J --> L[Output Results in Binary File]
+    K --> L[Output Results in Binary File]
+    L --> M[End]
 ```
 
 ## Performance Evaluation

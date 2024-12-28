@@ -7,6 +7,7 @@
 #include <thread>
 #include <numeric>
 #include <queue>
+#include <mutex>
 #include <atomic>
 #include <mutex>
 #include <memory>
@@ -17,6 +18,33 @@
 #include "hnswlib/hnswlib.h"
 #include "macros.h"
 using namespace std;
+
+std::mutex mtx;
+
+void processQuery(const vector<float>& q, BPTree* bPTree, hnswlib::HierarchicalNSW<float>* hnsw, const vector<vector<float>>& nodes, int threshold, vector<vector<uint32_t>>& knn_results, float& totalRecall, int& nbQueries) {
+    float l = q[QUERY_L_INDEX];
+    float r = q[QUERY_R_INDEX];
+    vector<int> filtered_ids = bPTree->searchRange(l, r);
+
+    // Compute KNN
+    vector<uint32_t> knn = computeKNN(hnsw, filtered_ids, nodes, q, K, l, r, threshold);
+
+    // Compute recall using brute force KNN
+    vector<uint32_t> ground_truth = bruteForceKNN(filtered_ids, nodes, q, K);
+    int relevant_retrieved = 0;
+    for (int id : knn) {
+        if (find(ground_truth.begin(), ground_truth.end(), id) != ground_truth.end()) {
+            relevant_retrieved++;
+        }
+    }
+    float recall_query = (float)relevant_retrieved / ground_truth.size();
+
+    // Lock to safely modify shared variables in a multithreaded context
+    std::lock_guard<std::mutex> lock(mtx);
+    totalRecall += recall_query;
+    knn_results.push_back(std::move(knn));
+    nbQueries++;
+}
 
 /**
  * @brief Decides which KNN method to use based on a given threshold
@@ -120,37 +148,19 @@ int main(int argc, char* argv[]) {
         auto start_time_queries = chrono::high_resolution_clock::now();
 
         int nbQueries = 0;
-        float l, r;
         int threshold = 4000;
-        vector<int> filtered_ids;
         vector<vector<uint32_t>> knn_results;
-        vector<uint32_t> knn;
-        float recall_query;
         float totalRecall = 0.0f;
 
-        for (auto q : queries) {
+        vector<thread> threads;
+        for (const auto& q : queries) {
             if (q[QUERY_TYPE_INDEX] == 2) {
-                l = q[QUERY_L_INDEX];
-                r = q[QUERY_R_INDEX];
-                filtered_ids = bPTree->searchRange(l, r);
-                // Compute KNN
-                knn = computeKNN(hnsw, filtered_ids, nodes, q, K, l, r, threshold);
-
-                // Compute recall
-                // Compute ground truth using brute force KNN
-                vector<uint32_t> ground_truth = bruteForceKNN(filtered_ids, nodes, q, K);
-                int relevant_retrieved = 0;
-                for (int id : knn) {
-                    if (find(ground_truth.begin(), ground_truth.end(), id) != ground_truth.end()) {
-                        relevant_retrieved++;
-                    }
-                }
-                recall_query = (float)relevant_retrieved / ground_truth.size();
-                totalRecall += recall_query;
-
-                knn_results.push_back(std::move(knn));
-                nbQueries++;
+                threads.emplace_back(processQuery, q, bPTree, hnsw, nodes, threshold, ref(knn_results), ref(totalRecall), ref(nbQueries));
             }
+        }
+        // Wait for all threads to finish
+        for (auto& t : threads) {
+            t.join();
         }
 
         auto end_time_queries = chrono::high_resolution_clock::now();
