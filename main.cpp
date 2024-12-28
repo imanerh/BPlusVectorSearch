@@ -148,7 +148,7 @@ int main(int argc, char* argv[]) {
         auto start_time_queries = chrono::high_resolution_clock::now();
 
         int nbQueries = 0;
-        int threshold = 500;
+        int threshold = 2500;
         vector<vector<uint32_t>> knn_results;
         float totalRecall = 0.0f;
 
