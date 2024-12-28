@@ -1,8 +1,9 @@
 
 # Enhanced ANN Search with B+ Tree Filtering and HNSW for Range Queries
-![C++](https://img.shields.io/badge/language-C++-00599C)
-![HNSWLib](https://img.shields.io/badge/dependency-HNSWLib-purple)
-![Graphviz](https://img.shields.io/badge/Tree_Visualization-Graphviz-green)
+[![C++](https://img.shields.io/badge/language-C++-00599C)](https://isocpp.org)
+[![HNSWLib](https://img.shields.io/badge/dependency-HNSWLib-purple)](https://github.com/nmslib/hnswlib)
+[![Graphviz](https://img.shields.io/badge/Tree_Visualization-Graphviz-green)](https://graphviz.org)
+
 
 ## Table of Contents
 - [Enhanced ANN Search with B+ Tree Filtering and HNSW for Range Queries](#enhanced-ann-search-with-b-tree-filtering-and-hnsw-for-range-queries)
