@@ -21,13 +21,13 @@ using namespace std;
 
 std::mutex mtx;
 
-void processQuery(const vector<float>& q, BPTree* bPTree, hnswlib::HierarchicalNSW<float>* hnsw, const vector<vector<float>>& nodes, int threshold, vector<vector<uint32_t>>& knn_results, float& totalRecall, int& nbQueries) {
+void processQuery(const vector<float>& q, BPTree* bPTree, hnswlib::HierarchicalNSW<float>* hnsw, const vector<vector<float>>& nodes, int threshold, vector<vector<uint32_t>>& knn_results, float& totalRecall, int& nbQueries, int& k_init) {
     float l = q[QUERY_L_INDEX];
     float r = q[QUERY_R_INDEX];
     vector<int> filtered_ids = bPTree->searchRange(l, r);
 
     // Compute KNN
-    vector<uint32_t> knn = computeKNN(hnsw, filtered_ids, nodes, q, K, l, r, threshold);
+    vector<uint32_t> knn = computeKNN(hnsw, filtered_ids, nodes, q, K, l, r, threshold, k_init);
 
     // Compute recall using brute force KNN
     // vector<uint32_t> ground_truth = bruteForceKNN(filtered_ids, nodes, q, K);
@@ -63,14 +63,14 @@ void processQuery(const vector<float>& q, BPTree* bPTree, hnswlib::HierarchicalN
  *
  * @return A vector of identifiers for the K nearest neighbors satisfying the range [l, r]
  */
-vector<uint32_t> computeKNN(hnswlib::HierarchicalNSW<float>* hnsw, const vector<int>& ids, const vector<vector<float>>& dataset, const vector<float>& query, int k, float l, float r, int threshold) {
+vector<uint32_t> computeKNN(hnswlib::HierarchicalNSW<float>* hnsw, const vector<int>& ids, const vector<vector<float>>& dataset, const vector<float>& query, int k, float l, float r, int threshold, int k_init) {
     if (ids.size() <= threshold) {
         // cout << "=> BRUTEEFORCE" << endl;
         return bruteForceKNN(ids, dataset, query, k);
     }
     else {
         // cout << "=> HNSW" << endl;
-        return hnswKNN(hnsw, dataset, query, k, l, r);
+        return hnswKNN(hnsw, dataset, query, k, l, r, k_init);
     }
 }
 
@@ -151,11 +151,13 @@ int main(int argc, char* argv[]) {
         int threshold = 2500;
         vector<vector<uint32_t>> knn_results;
         float totalRecall = 0.0f;
+        int k_init = nodes.size() / 5;
+        cout << "k_init: " << k_init << endl;
 
         vector<thread> threads;
         for (const auto& q : queries) {
             if (q[QUERY_TYPE_INDEX] == 2 || q[QUERY_TYPE_INDEX] == 3) {
-                threads.emplace_back(processQuery, q, bPTree, hnsw, nodes, threshold, ref(knn_results), ref(totalRecall), ref(nbQueries));
+                threads.emplace_back(processQuery, q, bPTree, hnsw, nodes, threshold, ref(knn_results), ref(totalRecall), ref(nbQueries), ref(k_init));
             }
         }
         // Wait for all threads to finish

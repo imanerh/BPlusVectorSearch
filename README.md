@@ -2,6 +2,7 @@
 # Enhanced ANN Search with B+ Tree Filtering and HNSW for Range Queries
 ![C++](https://img.shields.io/badge/language-C++-00599C)
 ![HNSWLib](https://img.shields.io/badge/dependency-HNSWLib-purple)
+![Graphviz](https://img.shields.io/badge/Tree_Visualization-Graphviz-green)
 
 ## Table of Contents
 - [Enhanced ANN Search with B+ Tree Filtering and HNSW for Range Queries](#enhanced-ann-search-with-b-tree-filtering-and-hnsw-for-range-queries)
@@ -34,7 +35,7 @@ This approach leverages the power of both exact and approximate search technique
 
 ## Features
 
-- **B+ Tree Integration**: A B+ tree is implemented to efficiently filter data points based on given attribute ranges. The B+ tree supports **bulkloading**, which optimizes the tree construction process for large datasets.
+- **B+ Tree Integration**: A B+ tree is implemented to efficiently filter data points based on given attribute ranges. The B+ tree supports **bulkloading**, which optimizes the tree construction process for large datasets. Additionally, the B+ tree can be **visualized using Graphviz**, providing an intuitive way to inspect the tree structure.
 - **HNSWLib Integration**: The HNSWLib library is used for ANN search, with support for **multithreading** to improve index creation speed and query performance.
 - **Brute-force and ANN Search**: Depending on the size of the filtered data subset, either a brute-force search using Euclidean distance squared or an ANN search with post-filtering is executed.
 - **Flexible Query Processing**: The program takes two binary files (data and queries), and processes them through a pipeline that includes building the B+ tree, running queries, and generating an output binary file containing the IDs of the nearest neighbors for each query.
@@ -158,8 +159,16 @@ The following tests represent a subset of the experiments conducted, using the f
 - **K_init** = 2000  
 - **M** = 24  
 - **ef_construction** = 140  
-
+  
+The data used for these experiments includes `dummy-data.bin` with $10^4$ vectors and `dummy-queries.bin` with 100 queries, both of which are available in [Resource 5](#resources).
 The threshold was varied to observe changes in **QPS** and **Recall**.
+
+Additional metrics from the setup:
+
+- **Bulkloading Time**: 5 ms
+- **Time to Build the HNSW Index**: 915 ms
+- **Duration to Process All Queries**: 340 ms
+
 
 | Threshold | Search Method   | QPS  | Recall     |
 |-----------|-----------------|------|------------|
@@ -178,11 +187,9 @@ The threshold was varied to observe changes in **QPS** and **Recall**.
 - Fine-tuning the above parameters for optimal performance.
 - Additional tests to justify parameter choices mathematically.
 
-## Resources
-
-- [B+ Tree GitHub](https://github.com/niteshkumartiwari/B-Plus-Tree) – Inspired the B+ tree implementation.
-- [HNSW Paper](https://arxiv.org/abs/1603.09320) – Paper detailing the HNSW algorithm.
-- [HNSWLib GitHub](https://github.com/nmslib/hnswlib) – Core library for HNSW.
-- [Multithreaded HNSW Example](https://github.com/nmslib/hnswlib/blob/master/examples/cpp/example_mt_search.cpp)
-
-- [Data and File Structure Information](https://dbgroup.cs.tsinghua.edu.cn/sigmod2024/task.shtml?content=description)
+## Resources  
+<sup>[1]</sup> [B+ Tree GitHub](https://github.com/niteshkumartiwari/B-Plus-Tree) – Inspired the B+ tree implementation.  
+<sup>[2]</sup> [HNSW Paper](https://arxiv.org/abs/1603.09320) – Paper detailing the HNSW algorithm.  
+<sup>[3]</sup> [HNSWLib GitHub](https://github.com/nmslib/hnswlib) – Core library for HNSW.  
+<sup>[4]</sup> [Multithreaded HNSW Example](https://github.com/nmslib/hnswlib/blob/master/examples/cpp/example_mt_search.cpp)  
+<sup>[5]</sup> [Data and File Structure Information](https://dbgroup.cs.tsinghua.edu.cn/sigmod2024/task.shtml?content=description)  

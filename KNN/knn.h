@@ -20,10 +20,10 @@ vector<uint32_t> bruteForceKNN(const vector<int>& ids, const vector<vector<float
 hnswlib::HierarchicalNSW<float>* createHNSW(const vector<vector<float>>& dataset);
 
 // HNSW-based KNN implementation
-vector<uint32_t> hnswKNN(hnswlib::HierarchicalNSW<float>* hnsw, const vector<vector<float>>& dataset, const vector<float>& query, int k, float l, float r);
+vector<uint32_t> hnswKNN(hnswlib::HierarchicalNSW<float>* hnsw, const vector<vector<float>>& dataset, const vector<float>& query, int k, float l, float r, int k_init);
 
 // Function to decide which KNN method to use
-vector<uint32_t> computeKNN(hnswlib::HierarchicalNSW<float>* hnsw, const vector<int>& ids, const vector<vector<float>>& dataset, const vector<float>& query, int k, float l, float r, int threshold);
+vector<uint32_t> computeKNN(hnswlib::HierarchicalNSW<float>* hnsw, const vector<int>& ids, const vector<vector<float>>& dataset, const vector<float>& query, int k, float l, float r, int threshold, int k_init);
 
 
 #endif 

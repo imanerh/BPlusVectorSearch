@@ -216,9 +216,9 @@ hnswlib::HierarchicalNSW<float>* createHNSW(const vector<vector<float>>& dataset
  *
  * @return A vector of identifiers for the K nearest neighbors that satisfy the range [l, r]
  */
-vector<uint32_t> hnswKNN(hnswlib::HierarchicalNSW<float>* hnsw, const vector<vector<float>>& dataset, const vector<float>& query, int k, float l, float r) {
+vector<uint32_t> hnswKNN(hnswlib::HierarchicalNSW<float>* hnsw, const vector<vector<float>>& dataset, const vector<float>& query, int k, float l, float r, int k_init) {
     // Perform KNN search
-    auto result = hnsw->searchKnn(query.data() + QUERY_EXTRAS, K_INIT);
+    auto result = hnsw->searchKnn(query.data() + QUERY_EXTRAS, k_init);
 
     // POST-Filtering
     vector<pair<float, int>> neighbors;
