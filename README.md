@@ -126,7 +126,7 @@ flowchart LR
     F --> G[Run Range Search in B+ Tree]
     G --> I{Size of Filtered Vectors}
     I -->|<= threshold| J[Run Brute-Force Search with Euclidean Distance Squared]
-    I -->|\> threshold| K[Run HNSW for KNN with Post-Filtering]
+    I -->|else| K[Run HNSW for KNN with Post-Filtering]
     J --> L[Output Results in Binary File]
     K --> L[Output Results in Binary File]
     L --> M[End]
