@@ -6,8 +6,6 @@
 
 
 ## Table of Contents
-- [Enhanced KNN Search for Range Queries with HNSW and B+ Tree Indexing](#enhanced-knn-search-for-range-queries-with-hnsw-and-b-tree-indexing)
-  - [Table of Contents](#table-of-contents)
   - [Project Overview](#project-overview)
   - [Features](#features)
   - [Setup and Installation](#setup-and-installation)
