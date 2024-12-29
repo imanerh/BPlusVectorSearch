@@ -148,11 +148,10 @@ int main(int argc, char* argv[]) {
         auto start_time_queries = chrono::high_resolution_clock::now();
 
         int nbQueries = 0;
-        int threshold = 2500;
+        int threshold = 300000;
         vector<vector<uint32_t>> knn_results;
         float totalRecall = 0.0f;
         int k_init = nodes.size() / 5;
-        cout << "k_init: " << k_init << endl;
 
         vector<thread> threads;
         for (const auto& q : queries) {

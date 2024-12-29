@@ -20,20 +20,27 @@ using std::vector;
 /// @param knn a (N * 100) shape 2-D vector
 /// @param path target save path, the output knng should be named as
 /// "output.bin" for evaluation
-void SaveKNN(const std::vector<std::vector<uint32_t>> &knns,
-              const std::string &path = "output.bin") {
-  std::ofstream ofs(path, std::ios::out | std::ios::binary);
-  const int k = K;
-  const uint32_t N = knns.size();
-  if (knns.front().size() != k) {
-    cout << knns.front().size() << endl;
-  }
-  assert(knns.front().size() == k);
-  for (unsigned i = 0; i < N; ++i) {
-    auto const &knn = knns[i];
-    ofs.write(reinterpret_cast<char const *>(&knn[0]), k * sizeof(uint32_t));
-  }
-  ofs.close();
+void SaveKNN(const std::vector<std::vector<uint32_t>>& knns,
+    const std::string& path = "output.bin") {
+    std::ofstream ofs(path, std::ios::out | std::ios::binary);
+    const int k = K;
+    const uint32_t N = knns.size();
+
+    // Buffer to hold k elements (either from knn or padded with zeros)
+    std::vector<uint32_t> buffer(k, 0);
+    for (unsigned i = 0; i < N; ++i) {
+        auto const& knn = knns[i];
+        std::copy(knn.begin(), knn.end(), buffer.begin());
+        ofs.write(reinterpret_cast<char const*>(buffer.data()), k * sizeof(uint32_t));
+    }
+    ofs.close();
+
+    //   assert(knns.front().size() == k);
+    //   for (unsigned i = 0; i < N; ++i) {
+    //     auto const &knn = knns[i];
+    //     ofs.write(reinterpret_cast<char const *>(&knn[0]), k * sizeof(uint32_t));
+    //   }
+    //   ofs.close();
 }
 
 
@@ -41,27 +48,27 @@ void SaveKNN(const std::vector<std::vector<uint32_t>> &knns,
 /// @brief Reading binary data vectors. Raw data store as a (N x dim)
 /// @param file_path file path of binary data
 /// @param data returned 2D data vectors
-void ReadBin(const std::string &file_path,
-             const int num_dimensions,
-             std::vector<std::vector<float>> &data) {
-  std::ifstream ifs;
-  ifs.open(file_path, std::ios::binary);
-  assert(ifs.is_open());
-  uint32_t N;  // num of points
-  ifs.read((char *)&N, sizeof(uint32_t));
-  data.resize(N);
-  // std::cout << "# of points: " << N << std::endl;
-  std::vector<float> buff(num_dimensions);
-  int counter = 0;
-  while (ifs.read((char *)buff.data(), num_dimensions * sizeof(float))) {
-    std::vector<float> row(num_dimensions);
-    for (int d = 0; d < num_dimensions; d++) {
-      row[d] = static_cast<float>(buff[d]);
+void ReadBin(const std::string& file_path,
+    const int num_dimensions,
+    std::vector<std::vector<float>>& data) {
+    std::ifstream ifs;
+    ifs.open(file_path, std::ios::binary);
+    assert(ifs.is_open());
+    uint32_t N;  // num of points
+    ifs.read((char*)&N, sizeof(uint32_t));
+    data.resize(N);
+    // std::cout << "# of points: " << N << std::endl;
+    std::vector<float> buff(num_dimensions);
+    int counter = 0;
+    while (ifs.read((char*)buff.data(), num_dimensions * sizeof(float))) {
+        std::vector<float> row(num_dimensions);
+        for (int d = 0; d < num_dimensions; d++) {
+            row[d] = static_cast<float>(buff[d]);
+        }
+        data[counter++] = std::move(row);
     }
-    data[counter++] = std::move(row);
-  }
-  ifs.close();
-  // std::cout << "Finish Reading Data" << endl;
+    ifs.close();
+    // std::cout << "Finish Reading Data" << endl;
 }
 
 

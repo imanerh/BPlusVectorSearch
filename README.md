@@ -1,12 +1,12 @@
 
-# Enhanced ANN Search with B+ Tree Filtering and HNSW for Range Queries
+# Enhanced KNN Search for Range Queries with HNSW and B+ Tree Indexing
 [![C++](https://img.shields.io/badge/language-C++-00599C)](https://isocpp.org)
 [![HNSWLib](https://img.shields.io/badge/dependency-HNSWLib-purple)](https://github.com/nmslib/hnswlib)
 [![Graphviz](https://img.shields.io/badge/Tree_Visualization-Graphviz-green)](https://graphviz.org)
 
 
 ## Table of Contents
-- [Enhanced ANN Search with B+ Tree Filtering and HNSW for Range Queries](#enhanced-ann-search-with-b-tree-filtering-and-hnsw-for-range-queries)
+- [Enhanced KNN Search for Range Queries with HNSW and B+ Tree Indexing](#enhanced-knn-search-for-range-queries-with-hnsw-and-b-tree-indexing)
   - [Table of Contents](#table-of-contents)
   - [Project Overview](#project-overview)
   - [Features](#features)
@@ -166,22 +166,22 @@ The threshold was varied to observe changes in **QPS** and **Recall**.
 
 Additional metrics from the setup:
 
-- **Bulkloading Time**: 5 ms
-- **Time to Build the HNSW Index**: 915 ms
-- **Duration to Process All Queries**: 340 ms
+- **Bulkloading Time**: 4 ms
+- **Time to Build the HNSW Index**: 2038 ms
+- **Duration to Process All Queries**: 177 ms
 
 
 | Threshold | Search Method   | QPS  | Recall     |
 |-----------|-----------------|------|------------|
-| 0         | Only HNSW       | 132  | 1          |
-| 500         | Hybrid       | 100  | 1          |
-| 1000         | Hybrid       | 120  | 1          |
-| 1500         | Hybrid       | 115  | 1          |
-| 2000         | Hybrid       | 140  | 1          |
-| 2500         | Hybrid       | 142  | 1          |
-| 4000         | Hybrid       | 120  | 1          |
-| 5000         | Hybrid       | 122  | 1          |
-| inf       | Only Bruteforce | 71  | 1          |
+| 0         | Only HNSW       | 265  | 1          |
+| 500         | Hybrid       | 261  | 1          |
+| 1000         | Hybrid       | 217  | 1          |
+| 1500         | Hybrid       | 283  | 1          |
+| 2000         | Hybrid       | 288  | 1          |
+| 2500         | Hybrid       | 265  | 1          |
+| 4000         | Hybrid       | 206  | 1          |
+| 5000         | Hybrid       | 198  | 1          |
+| inf       | Only Bruteforce | 225  | 1          |
 
 ### Further Improvements
 
